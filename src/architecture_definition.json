@@ -1,0 +1,17 @@
+{
+  "model_type": "<MODEL_TYPE>",  // e.g., "transformer", "RNN", "CNN"
+  "layers": [
+    {
+      "layer_type": "<LAYER_TYPE>",  // e.g., "Dense", "LSTM", "Conv2D"
+      "units": "<NUMBER_OF_UNITS>",  // e.g., 128, 256
+      "activation": "<ACTIVATION_FUNCTION>",  // e.g., "relu", "sigmoid", "tanh"
+      "dropout_rate": "<DROPOUT_RATE>"  // e.g., 0.1, 0.2 (optional)
+    }
+    // Add more layers as needed
+  ],
+  "input_dimension": "<INPUT_DIMENSION>",  // e.g., 512, 1024
+  "output_dimension": "<OUTPUT_DIMENSION>",  // e.g., 10, 1000
+  "learning_rate": "<LEARNING_RATE>",  // e.g., 0.001, 0.0001
+  "batch_size": "<BATCH_SIZE>",  // e.g., 32, 64
+  "epochs": "<NUMBER_OF_EPOCHS>"  // e.g., 10, 50
+}

@@ -117,6 +117,34 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - UI components inspired by [shadcn/ui](https://ui.shadcn.com)
 - Color scheme based on modern design principles
 
+## AI Model Generation and Deployment
+
+This section provides an overview of the capabilities for generating custom large language models (LLMs) tailored to specific needs. The following scripts and files have been created to assist in this process:
+
+### Overview of Capabilities
+
+- **Architecture Definition**: Define model architecture using JSON configuration.
+- **Data Preparation**: Prepare and preprocess data using Python scripts.
+- **Model Training**: Train models using PyTorch with customizable parameters.
+- **Model Evaluation**: Evaluate model performance and visualize results.
+- **Deployment**: Deploy models using Docker for containerization.
+
+### Scripts and Files
+
+1. **`src/architecture_definition.json`**: JSON template for defining model architecture.
+2. **`src/data_preparation.py`**: Script for cleaning, tokenizing, and transforming text data.
+3. **`src/model_training.py`**: Script for training models with PyTorch.
+4. **`src/model_evaluation.py`**: Script for evaluating models and visualizing results.
+5. **`src/deployment_dockerfile`**: Dockerfile for containerizing the application.
+
+### Instructions
+
+1. **Define Model Architecture**: Customize `src/architecture_definition.json` with specific model parameters.
+2. **Prepare Data**: Use `src/data_preparation.py` to preprocess your dataset.
+3. **Train Model**: Run `src/model_training.py` to train the model using your data and configuration.
+4. **Evaluate Model**: Use `src/model_evaluation.py` to assess model performance.
+5. **Deploy Model**: Build and run the Docker container using `src/deployment_dockerfile`.
+
 ## Support
 
 For support, email support@aiarchitect.com or join our [Discord community](https://discord.gg/aiarchitect).
