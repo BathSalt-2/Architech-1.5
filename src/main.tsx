@@ -1,45 +1,32 @@
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { Toaster } from "@/components/ui/toaster";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import { TooltipProvider } from "./components/ui/tooltip";
-
 import { ThemeProvider } from "./components/layout/theme-provider";
 import "./index.css";
-import Index from "./pages";
-import LoginForm from "./pages/login";
-import SignupForm from "./pages/signup";
-import Logout from "./pages/logout";
-import AvatarPage from "./pages/avatar";
-import InstrumentsPage from "./pages/instruments";
-import PlayPage from "./pages/play";
-import AchievementsPage from "./pages/achievements";
-import SettingsPage from "./pages/settings";
+import Index from "./pages/index";
 
-const queryClient = new QueryClient();
+// Mock components for routes that aren't implemented yet
+const MockComponent = ({ name }: { name: string }) => (
+  <div className="p-4">
+    <h1 className="text-2xl font-bold">{name} Page</h1>
+    <p>This page is under construction.</p>
+  </div>
+);
 
 createRoot(document.getElementById("root")!).render(
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <ThemeProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path='/' element={<Index />} />
-            <Route path='/avatar' element={<AvatarPage />} />
-            <Route path='/instruments' element={<InstrumentsPage />} />
-            <Route path='/play' element={<PlayPage />} />
-            <Route path='/achievements' element={<AchievementsPage />} />
-            <Route path='/settings' element={<SettingsPage />} />
-            <Route path='/login' element={<LoginForm />} />
-            <Route path='/signup' element={<SignupForm />} />
-            <Route path='/logout' element={<Logout />} />
-          </Routes>
-        </BrowserRouter>
-        <Sonner />
-        <Toaster />
-      </ThemeProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <ThemeProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<Index />} />
+        <Route path='/avatar' element={<MockComponent name="Avatar" />} />
+        <Route path='/instruments' element={<MockComponent name="Instruments" />} />
+        <Route path='/play' element={<MockComponent name="Play" />} />
+        <Route path='/achievements' element={<MockComponent name="Achievements" />} />
+        <Route path='/settings' element={<MockComponent name="Settings" />} />
+        <Route path='/login' element={<MockComponent name="Login" />} />
+        <Route path='/signup' element={<MockComponent name="Signup" />} />
+        <Route path='/logout' element={<MockComponent name="Logout" />} />
+      </Routes>
+    </BrowserRouter>
+  </ThemeProvider>
 );

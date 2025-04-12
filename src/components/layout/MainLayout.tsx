@@ -14,7 +14,7 @@ export function MainLayout({ children }: MainLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-white">
       {!isMobile && <AppSidebar />}
       
       {isMobile && (
@@ -22,7 +22,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="fixed top-4 left-4 z-50"
+            className="fixed top-4 left-4 z-50 bg-purple-600 text-white"
             onClick={() => setSidebarOpen(true)}
           >
             <Menu />
@@ -36,7 +36,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         </>
       )}
       
-      <main className="flex-1">
+      <main className="flex-1 bg-white text-black">
         {children}
       </main>
     </div>
