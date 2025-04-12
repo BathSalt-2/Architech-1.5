@@ -1,8 +1,16 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Workflow, Plus, ArrowRight } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Workflow, Plus, ArrowRight, Sparkles, Users } from "lucide-react";
+import { AgentDesigner } from "@/components/agent-designer/AgentDesigner";
+import { TextToAgentBuilder } from "@/components/text-to-agent/TextToAgentBuilder";
+import { CrewAIImporter } from "@/components/crew-ai/CrewAIImporter";
 
 export default function WorkflowBuilder() {
+  const [activeDialog, setActiveDialog] = useState<"visual-designer" | "text-to-workflow" | "crew-ai" | null>(null);
+  
   const sampleWorkflows = [
     {
       id: "1",
@@ -27,11 +35,60 @@ export default function WorkflowBuilder() {
           <h1 className="text-3xl font-bold gradient-text">Workflow Builder</h1>
           <p className="text-gray-400 mt-1">Create and manage automated workflows</p>
         </div>
-        <Button asChild className="gradient-bg text-black">
-          <a href="/workflows/create">
-            <Plus className="mr-2 h-4 w-4" /> Create Workflow
-          </a>
-        </Button>
+        <div className="flex gap-2">
+          <Dialog open={activeDialog === "visual-designer"} onOpenChange={(open) => setActiveDialog(open ? "visual-designer" : null)}>
+            <DialogTrigger asChild>
+              <Button className="gradient-bg text-black">
+                <Plus className="mr-2 h-4 w-4" /> Visual Designer
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-[90vw] max-h-[90vh] w-[1200px] h-[800px] bg-[#0a1029] border-[#2a2a4a]">
+              <DialogHeader>
+                <DialogTitle>Visual Agent Designer</DialogTitle>
+                <DialogDescription>
+                  Design your agent visually using the drag-and-drop interface
+                </DialogDescription>
+              </DialogHeader>
+              <div className="h-full mt-4">
+                <AgentDesigner />
+              </div>
+            </DialogContent>
+          </Dialog>
+          
+          <Dialog open={activeDialog === "text-to-workflow"} onOpenChange={(open) => setActiveDialog(open ? "text-to-workflow" : null)}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="border-[#5ee7ff] text-[#5ee7ff]">
+                <Sparkles className="mr-2 h-4 w-4" /> Text to Workflow
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[900px] bg-[#0a1029] border-[#2a2a4a]">
+              <DialogHeader>
+                <DialogTitle>Create Workflow from Text</DialogTitle>
+                <DialogDescription>
+                  Describe your workflow in natural language and we'll build it for you
+                </DialogDescription>
+              </DialogHeader>
+              <TextToAgentBuilder />
+            </DialogContent>
+          </Dialog>
+          
+          <Dialog open={activeDialog === "crew-ai"} onOpenChange={(open) => setActiveDialog(open ? "crew-ai" : null)}>
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                <Users className="mr-2 h-4 w-4" /> Import Crew AI
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[900px] bg-[#0a1029] border-[#2a2a4a]">
+              <DialogHeader>
+                <DialogTitle>Import Crew AI Configuration</DialogTitle>
+                <DialogDescription>
+                  Import your Crew AI configuration to create a workflow
+                </DialogDescription>
+              </DialogHeader>
+              <CrewAIImporter />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -80,7 +137,11 @@ export default function WorkflowBuilder() {
               <p className="text-gray-400 mb-4">
                 Describe your workflow in natural language and let Arch1tech generate it for you.
               </p>
-              <Button variant="outline" className="w-full border-[#5ee7ff] text-[#5ee7ff]">
+              <Button 
+                variant="outline" 
+                className="w-full border-[#5ee7ff] text-[#5ee7ff]"
+                onClick={() => setActiveDialog("text-to-workflow")}
+              >
                 Try It Now
               </Button>
             </CardContent>
@@ -93,21 +154,29 @@ export default function WorkflowBuilder() {
               <p className="text-gray-400 mb-4">
                 Use our drag-and-drop interface to create complex workflows visually.
               </p>
-              <Button variant="outline" className="w-full border-[#5ee7ff] text-[#5ee7ff]">
+              <Button 
+                variant="outline" 
+                className="w-full border-[#5ee7ff] text-[#5ee7ff]"
+                onClick={() => setActiveDialog("visual-designer")}
+              >
                 Open Builder
               </Button>
             </CardContent>
           </Card>
           <Card className="bg-[#0a1029] border-[#2a2a4a]">
             <CardHeader>
-              <CardTitle className="text-lg">Templates</CardTitle>
+              <CardTitle className="text-lg">Crew AI Import</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-400 mb-4">
-                Start with pre-built templates to accelerate your workflow development.
+                Import your existing Crew AI configurations and deploy them as workflows.
               </p>
-              <Button variant="outline" className="w-full border-[#5ee7ff] text-[#5ee7ff]">
-                Browse Templates
+              <Button 
+                variant="outline" 
+                className="w-full border-[#5ee7ff] text-[#5ee7ff]"
+                onClick={() => setActiveDialog("crew-ai")}
+              >
+                Import Now
               </Button>
             </CardContent>
           </Card>

@@ -3,10 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Cpu, Plus, Search, Grid, List, ArrowRight } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Cpu, Plus, Search, Grid, List, ArrowRight, Sparkles, Users } from "lucide-react";
+import { TextToAgentBuilder } from "@/components/text-to-agent/TextToAgentBuilder";
+import { CrewAIImporter } from "@/components/crew-ai/CrewAIImporter";
 
 export default function AgentExplorer() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [activeDialog, setActiveDialog] = useState<"text-to-agent" | "crew-ai" | null>(null);
   
   const sampleAgents = [
     {
@@ -40,10 +44,42 @@ export default function AgentExplorer() {
           <p className="text-gray-400 mt-1">Browse, create, and manage your intelligent agents</p>
         </div>
         <div className="flex gap-2">
-          <Button asChild className="gradient-bg text-black">
-            <a href="/agents/create">
-              <Plus className="mr-2 h-4 w-4" /> Create Agent
-            </a>
+          <Dialog open={activeDialog === "text-to-agent"} onOpenChange={(open) => setActiveDialog(open ? "text-to-agent" : null)}>
+            <DialogTrigger asChild>
+              <Button className="gradient-bg text-black">
+                <Sparkles className="mr-2 h-4 w-4" /> Text to Agent
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[900px] bg-[#0a1029] border-[#2a2a4a]">
+              <DialogHeader>
+                <DialogTitle>Create Agent from Text</DialogTitle>
+                <DialogDescription>
+                  Describe your agent in natural language and we'll build it for you
+                </DialogDescription>
+              </DialogHeader>
+              <TextToAgentBuilder />
+            </DialogContent>
+          </Dialog>
+          
+          <Dialog open={activeDialog === "crew-ai"} onOpenChange={(open) => setActiveDialog(open ? "crew-ai" : null)}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="border-[#5ee7ff] text-[#5ee7ff]">
+                <Users className="mr-2 h-4 w-4" /> Import Crew AI
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[900px] bg-[#0a1029] border-[#2a2a4a]">
+              <DialogHeader>
+                <DialogTitle>Import Crew AI Configuration</DialogTitle>
+                <DialogDescription>
+                  Import your Crew AI configuration to create a workflow
+                </DialogDescription>
+              </DialogHeader>
+              <CrewAIImporter />
+            </DialogContent>
+          </Dialog>
+          
+          <Button variant="outline">
+            <Plus className="mr-2 h-4 w-4" /> Create Agent
           </Button>
         </div>
       </div>

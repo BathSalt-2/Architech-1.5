@@ -1,9 +1,14 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Layers, Upload, Plus, ArrowRight } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Layers, Upload, Plus, ArrowRight, Rocket } from "lucide-react";
+import { DeploymentManager } from "@/components/deployment/DeploymentManager";
 
 export default function ModelPlayground() {
+  const [selectedModel, setSelectedModel] = useState<string | null>(null);
+  
   const sampleModels = [
     {
       id: "1",
@@ -56,6 +61,7 @@ export default function ModelPlayground() {
           <TabsTrigger value="models">Models</TabsTrigger>
           <TabsTrigger value="playground">Playground</TabsTrigger>
           <TabsTrigger value="tuning">Fine-tuning</TabsTrigger>
+          <TabsTrigger value="deployment">Deployment</TabsTrigger>
         </TabsList>
         
         <TabsContent value="models" className="mt-6">
@@ -78,9 +84,27 @@ export default function ModelPlayground() {
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-sm text-gray-400">Provider: {model.provider}</span>
                   </div>
-                  <Button variant="outline" size="sm" className="w-full border-[#5ee7ff] text-[#5ee7ff]">
-                    Open in Playground <ArrowRight className="ml-1 h-3 w-3" />
-                  </Button>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" size="sm" className="flex-1 border-[#5ee7ff] text-[#5ee7ff]">
+                      Open in Playground
+                    </Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="flex-1">
+                          <Rocket className="h-4 w-4 mr-1" /> Deploy
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[900px] bg-[#0a1029] border-[#2a2a4a]">
+                        <DialogHeader>
+                          <DialogTitle>Deploy Model</DialogTitle>
+                          <DialogDescription>
+                            Configure and deploy your model as an API endpoint
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DeploymentManager agentId={model.id} agentName={model.name} />
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -137,6 +161,76 @@ export default function ModelPlayground() {
                 <p className="text-gray-400 text-center max-w-md">
                   The ability to fine-tune models with your own data will be available soon.
                 </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="deployment" className="mt-6">
+          <Card className="bg-[#0a1029] border-[#2a2a4a]">
+            <CardHeader>
+              <CardTitle>Model Deployment</CardTitle>
+              <CardDescription>
+                Deploy your models as API endpoints or integrate with other services
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="bg-[#1a1a3a] border-[#2a2a4a]">
+                  <CardHeader>
+                    <CardTitle className="text-lg">API Deployment</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-400 mb-4">
+                      Deploy your model as a REST API endpoint for integration with other applications.
+                    </p>
+                    <Button className="w-full gradient-bg text-black">
+                      Deploy as API
+                    </Button>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-[#1a1a3a] border-[#2a2a4a]">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Web UI Deployment</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-400 mb-4">
+                      Deploy your model with a web interface for easy interaction.
+                    </p>
+                    <Button className="w-full gradient-bg text-black">
+                      Deploy with UI
+                    </Button>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-[#1a1a3a] border-[#2a2a4a]">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Export Model</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-400 mb-4">
+                      Export your model for use in other environments or platforms.
+                    </p>
+                    <Button className="w-full border-[#5ee7ff] text-[#5ee7ff]" variant="outline">
+                      Export Model
+                    </Button>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-[#1a1a3a] border-[#2a2a4a]">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Integration</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-400 mb-4">
+                      Integrate your model with third-party services and platforms.
+                    </p>
+                    <Button className="w-full border-[#5ee7ff] text-[#5ee7ff]" variant="outline">
+                      View Integrations
+                    </Button>
+                  </CardContent>
+                </Card>
               </div>
             </CardContent>
           </Card>
