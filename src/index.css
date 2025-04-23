@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 70% 8%;
+    --foreground: 0 0% 98%;
+    --card: 240 70% 10%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 70% 10%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 180 100% 62%;
+    --primary-foreground: 240 70% 10%;
+    --secondary: 270 100% 62%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 30% 20%;
+    --muted-foreground: 240 10% 80%;
+    --accent: 300 100% 62%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 30% 25%;
+    --input: 240 30% 25%;
+    --ring: 180 100% 62%;
+    --chart-1: 180 100% 62%;
+    --chart-2: 270 100% 62%;
+    --chart-3: 300 100% 62%;
+    --chart-4: 120 100% 62%;
+    --chart-5: 210 100% 62%;
+    --radius: 0.5rem;
+    --sidebar-background: 240 70% 10%;
+    --sidebar-foreground: 240 10% 80%;
+    --sidebar-primary: 180 100% 62%;
+    --sidebar-primary-foreground: 240 70% 10%;
+    --sidebar-accent: 270 100% 62%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 30% 25%;
+    --sidebar-ring: 180 100% 62%;
+  }
+
+  .dark {
+    --background: 240 70% 8%;
+    --foreground: 0 0% 98%;
+    --card: 240 70% 10%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 70% 10%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 180 100% 62%;
+    --primary-foreground: 240 70% 10%;
+    --secondary: 270 100% 62%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 30% 20%;
+    --muted-foreground: 240 10% 80%;
+    --accent: 300 100% 62%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 30% 25%;
+    --input: 240 30% 25%;
+    --ring: 180 100% 62%;
+    --chart-1: 180 100% 62%;
+    --chart-2: 270 100% 62%;
+    --chart-3: 300 100% 62%;
+    --chart-4: 120 100% 62%;
+    --chart-5: 210 100% 62%;
+    --sidebar-background: 240 70% 10%;
+    --sidebar-foreground: 240 10% 80%;
+    --sidebar-primary: 180 100% 62%;
+    --sidebar-primary-foreground: 240 70% 10%;
+    --sidebar-accent: 270 100% 62%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 30% 25%;
+    --sidebar-ring: 180 100% 62%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Holographic glow effects */
+.glow-text {
+  text-shadow: 0 0 10px rgba(94, 231, 255, 0.7), 0 0 20px rgba(94, 231, 255, 0.5);
+}
+
+.glow-border {
+  box-shadow: 0 0 10px rgba(94, 231, 255, 0.3), 0 0 20px rgba(94, 231, 255, 0.2);
+}
+
+.glow-card {
+  box-shadow: 0 0 15px rgba(94, 231, 255, 0.2), 0 0 30px rgba(138, 95, 255, 0.1);
+}
+
+.gradient-text {
+  @apply bg-gradient-to-r from-[#5ee7ff] to-[#8a5fff] bg-clip-text text-transparent;
+}
+
+.gradient-bg {
+  @apply bg-gradient-to-r from-[#5ee7ff] to-[#8a5fff];
+}
+
+/* Animated pulse effect */
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 3s infinite ease-in-out;
+}
+
+main {
+  @apply min-h-screen w-full;
+}
