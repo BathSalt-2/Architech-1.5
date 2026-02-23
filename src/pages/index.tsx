@@ -1,169 +1,183 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Link } from "react-router-dom";
-import { ArrowRight, Cpu, Workflow, Sparkles, Layers, Share2, Users } from "lucide-react";
-import { fine } from "@/lib/fine";
-import { AstridCopilot } from "@/components/astrid/AstridCopilot";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { getGroqKey } from "../lib/groq";
+import { getActivity } from "../lib/activity";
 
-const Index = () => {
-  const { data: session } = fine.auth.useSession();
+interface Activity {
+  id: number;
+  action: string;
+  detail: string;
+  timestamp: string;
+}
+
+const QUICK_ACTIONS = [
+  { icon: "🤖", title: "Build an Agent", description: "Create a custom AI agent from natural language", path: "/agents", color: "from-cyan-500/20 to-cyan-600/10 border-cyan-500/30" },
+  { icon: "🧪", title: "Create LLM from Text", description: "Generate a custom language model", path: "/models", color: "from-purple-500/20 to-purple-600/10 border-purple-500/30" },
+  { icon: "🔄", title: "Design Workflow", description: "Build automated AI-powered workflows", path: "/workflows", color: "from-green-500/20 to-green-600/10 border-green-500/30" },
+  { icon: "🏪", title: "Browse Marketplace", description: "Discover pre-built agents and models", path: "/marketplace", color: "from-orange-500/20 to-orange-600/10 border-orange-500/30" },
+];
+
+export default function IndexPage() {
+  const navigate = useNavigate();
+  const hasKey = Boolean(getGroqKey());
+  const [activity, setActivity] = useState<Activity[]>([]);
+  const [stats, setStats] = useState({ agents: 0, models: 0, workflows: 0 });
+
+  useEffect(() => {
+    setActivity(getActivity());
+    setStats({
+      agents: JSON.parse(localStorage.getItem('arch15-agents') || '[]').length,
+      models: JSON.parse(localStorage.getItem('arch15-models') || '[]').length,
+      workflows: JSON.parse(localStorage.getItem('arch15-workflows') || '[]').length,
+    });
+  }, []);
+
+  const formatTime = (iso: string) => {
+    const d = new Date(iso);
+    const now = new Date();
+    const diffMs = now.getTime() - d.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    if (diffMins < 1) return 'just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return `${Math.floor(diffHours / 24)}d ago`;
+  };
 
   return (
-    <main className="w-full min-h-screen bg-[#0a0a1f]">
-      {/* Hero Section */}
-      <section className="relative py-20 px-6 md:px-10 flex flex-col items-center justify-center text-center">
-        <div className="absolute inset-0 bg-[url('/brain-network.svg')] bg-no-repeat bg-center opacity-10"></div>
-        <h1 className="text-4xl md:text-6xl font-bold mb-6 gradient-text glow-text">
-          Build the future, one thought at a time
-        </h1>
-        <p className="text-xl md:text-2xl text-gray-300 mb-10 max-w-3xl">
-          Create, customize, and deploy intelligent agents and complete applications using natural language
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4">
-          {session?.user ? (
-            <Button asChild size="lg" className="gradient-bg text-black font-bold">
-              <Link to="/agents">
-                Start Building <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
+    <div className="p-6 max-w-7xl mx-auto">
+      {/* Hero */}
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <h1 className="text-3xl font-black text-white">Welcome to <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">Arch1tech 1.5</span></h1>
+          {hasKey ? (
+            <span className="flex items-center gap-1.5 text-xs bg-green-500/20 text-green-400 border border-green-500/30 px-3 py-1 rounded-full font-semibold">
+              <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
+              AI Active
+            </span>
           ) : (
-            <Button asChild size="lg" className="gradient-bg text-black font-bold">
-              <Link to="/signup">
-                Get Started <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
+            <span className="flex items-center gap-1.5 text-xs bg-red-500/20 text-red-400 border border-red-500/30 px-3 py-1 rounded-full font-semibold">
+              <span className="w-1.5 h-1.5 bg-red-400 rounded-full"></span>
+              Configure API Key
+            </span>
           )}
-          <Button asChild size="lg" variant="outline" className="border-[#5ee7ff] text-[#5ee7ff]">
-            <Link to="/marketplace">Explore Marketplace</Link>
-          </Button>
         </div>
-      </section>
+        <p className="text-slate-400 text-lg">Build, deploy, and manage AI agents and custom models — powered by Or4cl3 AI.</p>
+        {!hasKey && (
+          <div className="mt-4 bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
+            <span>⚠️</span>
+            <span>Set your Groq API key in <button onClick={() => navigate('/settings')} className="underline font-semibold">Settings</button> to unlock AI features.</span>
+          </div>
+        )}
+      </div>
 
-      {/* Features Section */}
-      <section className="py-20 px-6 md:px-10">
-        <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center gradient-text">Core Features</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <FeatureCard
-            icon={Sparkles}
-            title="Thought-to-App Engine"
-            description="Type a goal or idea and generate a functioning app, agent, or workflow instantly."
-          />
-          <FeatureCard
-            icon={Cpu}
-            title="Visual Agent Designer"
-            description="Drag-and-drop builder for editing agent logic with an integrated test environment."
-          />
-          <FeatureCard
-            icon={Users}
-            title="Astrid: AI Co-Pilot"
-            description="Full-control co-pilot that can use every feature of the platform autonomously."
-          />
-          <FeatureCard
-            icon={Workflow}
-            title="Crew AI Integration"
-            description="Paste in Crew AI scripts and automatically deploy as working agents with a full GUI."
-          />
-          <FeatureCard
-            icon={Layers}
-            title="Custom Model Playground"
-            description="Import and use custom LLMs, vision models, or speech models with tuning capabilities."
-          />
-          <FeatureCard
-            icon={Share2}
-            title="Agent Marketplace"
-            description="Share, fork, and remix agents publicly or within private teams."
-          />
+      {/* Quick Actions */}
+      <div className="mb-8">
+        <h2 className="text-lg font-bold text-white mb-4">Quick Actions</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {QUICK_ACTIONS.map((action) => (
+            <button
+              key={action.path}
+              onClick={() => navigate(action.path)}
+              className={`bg-gradient-to-br ${action.color} border rounded-xl p-5 text-left hover:scale-105 transition-all duration-200 group`}
+            >
+              <div className="text-3xl mb-3">{action.icon}</div>
+              <div className="font-bold text-white text-sm mb-1 group-hover:text-cyan-400 transition-colors">{action.title}</div>
+              <div className="text-slate-400 text-xs">{action.description}</div>
+            </button>
+          ))}
         </div>
-      </section>
+      </div>
 
-      {/* Astrid Section */}
-      <section className="py-20 px-6 md:px-10 bg-[#0a1029]">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col lg:flex-row items-center gap-10">
-            <div className="lg:w-1/2">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 gradient-text">
-                Meet Astrid, Your AI Co-Pilot
-              </h2>
-              <p className="text-lg text-gray-300 mb-6">
-                Astrid is a full-control AI assistant that can use every feature of the platform autonomously. 
-                She can build specific agents from your prompts, optimize performance, and work silently in the background.
-              </p>
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-start">
-                  <div className="h-6 w-6 rounded-full gradient-bg flex items-center justify-center mr-3 mt-1">
-                    <span className="text-black font-bold">1</span>
-                  </div>
-                  <span className="text-gray-300">Mission Mode: Build specific agents/workflows from prompts</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="h-6 w-6 rounded-full gradient-bg flex items-center justify-center mr-3 mt-1">
-                    <span className="text-black font-bold">2</span>
-                  </div>
-                  <span className="text-gray-300">Optimization Mode: Monitor and improve performance</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="h-6 w-6 rounded-full gradient-bg flex items-center justify-center mr-3 mt-1">
-                    <span className="text-black font-bold">3</span>
-                  </div>
-                  <span className="text-gray-300">Background Mode: Work silently based on your preferences</span>
-                </li>
-              </ul>
-              <Button asChild className="gradient-bg text-black font-bold">
-                <Link to="/agents">Try Astrid Now</Link>
-              </Button>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Platform Stats */}
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+          <h2 className="text-lg font-bold text-white mb-4">Platform Stats</h2>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🤖</span>
+                <span className="text-slate-400 text-sm">Agents Built</span>
+              </div>
+              <span className="text-2xl font-black text-cyan-400">{stats.agents}</span>
             </div>
-            <div className="lg:w-1/2">
-              <AstridCopilot />
+            <div className="h-px bg-slate-700"></div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🧪</span>
+                <span className="text-slate-400 text-sm">Models Generated</span>
+              </div>
+              <span className="text-2xl font-black text-purple-400">{stats.models}</span>
+            </div>
+            <div className="h-px bg-slate-700"></div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🔄</span>
+                <span className="text-slate-400 text-sm">Workflows Created</span>
+              </div>
+              <span className="text-2xl font-black text-green-400">{stats.workflows}</span>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* CTA Section */}
-      <section className="py-20 px-6 md:px-10 text-center">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 gradient-text glow-text">
-            Ready to build the future?
-          </h2>
-          <p className="text-xl text-gray-300 mb-10">
-            Start creating intelligent agents and applications today with Arch1tech's powerful platform.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            {session?.user ? (
-              <Button asChild size="lg" className="gradient-bg text-black font-bold">
-                <Link to="/agents">
-                  Start Building <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-            ) : (
-              <Button asChild size="lg" className="gradient-bg text-black font-bold">
-                <Link to="/signup">
-                  Get Started <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-            )}
-            <Button asChild size="lg" variant="outline" className="border-[#5ee7ff] text-[#5ee7ff]">
-              <Link to="/marketplace">Explore Marketplace</Link>
-            </Button>
-          </div>
+        {/* Recent Activity */}
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+          <h2 className="text-lg font-bold text-white mb-4">Recent Activity</h2>
+          {activity.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="text-4xl mb-2">📋</div>
+              <p className="text-slate-500 text-sm">No activity yet</p>
+              <p className="text-slate-600 text-xs mt-1">Build something to get started!</p>
+            </div>
+          ) : (
+            <div className="space-y-3 max-h-64 overflow-y-auto">
+              {activity.map((item) => (
+                <div key={item.id} className="flex items-start gap-3 text-sm">
+                  <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full mt-1.5 flex-shrink-0"></div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-medium truncate">{item.action}</p>
+                    <p className="text-slate-500 text-xs truncate">{item.detail}</p>
+                  </div>
+                  <span className="text-slate-600 text-xs flex-shrink-0">{formatTime(item.timestamp)}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      </section>
-    </main>
-  );
-};
 
-const FeatureCard = ({ icon: Icon, title, description }: { icon: any; title: string; description: string }) => {
-  return (
-    <Card className="bg-[#0a1029]/80 border border-[#2a2a4a] glow-card overflow-hidden">
-      <CardContent className="p-6">
-        <div className="h-12 w-12 rounded-full gradient-bg flex items-center justify-center mb-4">
-          <Icon className="h-6 w-6 text-black" />
+        {/* Getting Started */}
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+          <h2 className="text-lg font-bold text-white mb-4">Getting Started</h2>
+          <ol className="space-y-3">
+            {[
+              { step: 1, text: "Set your Groq API key in Settings", icon: "🔑", done: hasKey, path: "/settings" },
+              { step: 2, text: "Build your first AI agent", icon: "🤖", done: stats.agents > 0, path: "/agents" },
+              { step: 3, text: "Generate a custom LLM", icon: "🧪", done: stats.models > 0, path: "/models" },
+              { step: 4, text: "Deploy to marketplace", icon: "🏪", done: false, path: "/marketplace" },
+            ].map((item) => (
+              <div
+                key={item.step}
+                className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
+                  item.done
+                    ? "bg-green-500/10 border border-green-500/20"
+                    : "bg-slate-700/50 hover:bg-slate-700 border border-transparent"
+                }`}
+                onClick={() => navigate(item.path)}
+              >
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                  item.done ? "bg-green-500 text-white" : "bg-slate-600 text-slate-400"
+                }`}>
+                  {item.done ? "✓" : item.step}
+                </div>
+                <span className="text-lg">{item.icon}</span>
+                <span className={`text-sm ${item.done ? "text-green-400 line-through" : "text-slate-300"}`}>
+                  {item.text}
+                </span>
+              </div>
+            ))}
+          </ol>
         </div>
-        <h3 className="text-xl font-bold mb-2 text-white">{title}</h3>
-        <p className="text-gray-300">{description}</p>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
-};
-
-export default Index;
+}

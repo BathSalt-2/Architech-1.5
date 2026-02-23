@@ -1,100 +1,144 @@
-import { AppSidebar } from "./Sidebar";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { fine } from "@/lib/fine";
-import { Link } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { getGroqKey } from "../../lib/groq";
 
-export function AppLayout({ children }: { children: React.ReactNode }) {
-  const isMobile = useIsMobile();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { data: session } = fine.auth.useSession();
+const NAV_ITEMS = [
+  { icon: "🏠", label: "Dashboard", path: "/" },
+  { icon: "🤖", label: "Agents", path: "/agents" },
+  { icon: "🔄", label: "Workflows", path: "/workflows" },
+  { icon: "🧪", label: "Model Playground", path: "/models" },
+  { icon: "🏪", label: "Marketplace", path: "/marketplace" },
+  { icon: "⚙️", label: "Settings", path: "/settings" },
+];
+
+interface AppLayoutProps {
+  children: React.ReactNode;
+}
+
+export function AppLayout({ children }: AppLayoutProps) {
+  const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const hasKey = Boolean(getGroqKey());
 
   return (
-    <div className="flex h-screen bg-[#0a0a1f] text-white overflow-hidden">
-      {/* Mobile sidebar toggle */}
-      {isMobile && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="fixed top-4 left-4 z-50 text-white"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
+    <div className="min-h-screen bg-slate-950 text-white flex">
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:flex flex-col w-64 bg-slate-900 border-r border-slate-700 fixed h-full z-30">
+        {/* Logo */}
+        <div className="px-6 py-5 border-b border-slate-700">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl font-black bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+              Arch1tech
+            </span>
+            <span className="text-xs bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded-full font-semibold">1.5</span>
+          </div>
+          <p className="text-xs text-slate-500 mt-1">Powered by Or4cl3 AI</p>
+        </div>
+
+        {/* API Status */}
+        <div className="px-6 py-3 border-b border-slate-700">
+          <div className="flex items-center gap-2 text-xs">
+            <span className={`w-2 h-2 rounded-full ${hasKey ? 'bg-green-400 shadow-lg shadow-green-400/50' : 'bg-red-400'}`}></span>
+            <span className={hasKey ? 'text-green-400' : 'text-red-400'}>
+              {hasKey ? 'Groq Connected' : 'API Key Required'}
+            </span>
+          </div>
+        </div>
+
+        {/* Nav */}
+        <nav className="flex-1 px-3 py-4 space-y-1">
+          {NAV_ITEMS.map((item) => {
+            const isActive = location.pathname === item.path ||
+              (item.path !== "/" && location.pathname.startsWith(item.path));
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm font-medium ${
+                  isActive
+                    ? "bg-gradient-to-r from-cyan-500/20 to-purple-600/20 text-cyan-400 border border-cyan-500/30"
+                    : "text-slate-400 hover:text-white hover:bg-slate-800"
+                }`}
+              >
+                <span className="text-base">{item.icon}</span>
+                <span>{item.label}</span>
+                {isActive && <span className="ml-auto w-1.5 h-1.5 bg-cyan-400 rounded-full"></span>}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-slate-700">
+          <p className="text-xs text-slate-600">© 2025 Or4cl3 AI Solutions</p>
+          <p className="text-xs text-slate-600">v1.5.0</p>
+        </div>
+      </aside>
+
+      {/* Mobile Header */}
+      <div className="md:hidden fixed top-0 left-0 right-0 bg-slate-900 border-b border-slate-700 z-30 px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-lg font-black bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+            Arch1tech
+          </span>
+          <span className="text-xs bg-cyan-500/20 text-cyan-400 px-1.5 py-0.5 rounded-full font-semibold">1.5</span>
+        </div>
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="text-slate-400 hover:text-white p-2"
         >
-          {sidebarOpen ? <X /> : <Menu />}
-        </Button>
+          {mobileMenuOpen ? "✕" : "☰"}
+        </button>
+      </div>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <div
+            className="absolute top-0 left-0 w-64 h-full bg-slate-900 border-r border-slate-700 p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-6">
+              <span className="text-xl font-black bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+                Arch1tech 1.5
+              </span>
+              <p className="text-xs text-slate-500 mt-1">Powered by Or4cl3 AI</p>
+            </div>
+            <nav className="space-y-1">
+              {NAV_ITEMS.map((item) => {
+                const isActive = location.pathname === item.path ||
+                  (item.path !== "/" && location.pathname.startsWith(item.path));
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm font-medium ${
+                      isActive
+                        ? "bg-gradient-to-r from-cyan-500/20 to-purple-600/20 text-cyan-400 border border-cyan-500/30"
+                        : "text-slate-400 hover:text-white hover:bg-slate-800"
+                    }`}
+                  >
+                    <span>{item.icon}</span>
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+        </div>
       )}
 
-      {/* Sidebar */}
-      <div
-        className={`${
-          isMobile
-            ? sidebarOpen
-              ? "fixed inset-y-0 left-0 z-40 w-64 transform translate-x-0 transition-transform duration-300 ease-in-out"
-              : "fixed inset-y-0 left-0 z-40 w-64 transform -translate-x-full transition-transform duration-300 ease-in-out"
-            : "w-64"
-        }`}
-      >
-        <AppSidebar />
-      </div>
-
-      {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="h-16 flex items-center justify-end px-6 border-b border-[#2a2a4a] bg-[#0a1029]">
-          {session?.user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={session.user.image || ""} alt={session.user.name || "User"} />
-                    <AvatarFallback className="bg-[#8a5fff]">
-                      {session.user.name?.charAt(0) || "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/profile">Profile</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/settings">Settings</Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/logout">Logout</Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <div className="flex gap-4">
-              <Button asChild variant="ghost" className="text-[#5ee7ff] hover:text-[#5ee7ff]/90">
-                <Link to="/login">Login</Link>
-              </Button>
-              <Button asChild className="bg-gradient-to-r from-[#5ee7ff] to-[#8a5fff] hover:opacity-90 text-black">
-                <Link to="/signup">Sign Up</Link>
-              </Button>
-            </div>
-          )}
-        </header>
-
-        {/* Main content area */}
-        <main className="flex-1 overflow-auto bg-[#0a0a1f]">
+      {/* Main Content */}
+      <main className="flex-1 md:ml-64 pt-0 md:pt-0">
+        <div className="md:hidden h-14"></div>
+        <div className="min-h-screen bg-slate-950">
           {children}
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }
