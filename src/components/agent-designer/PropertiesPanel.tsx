@@ -9,6 +9,162 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { modelService } from '@/lib/api/model-service';
 
+// ── Shared field styling ──────────────────────────────────────────────
+const FIELD_CLASS = 'bg-[#1a1a3a] border-[#2a2a4a]';
+
+// ── Reusable field components ─────────────────────────────────────────
+
+/** Text input field with label — used by every node type for "Label" and similar fields. */
+function TextField({
+  id,
+  label,
+  value,
+  onChange,
+  className,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  className?: string;
+}) {
+  return (
+    <div>
+      <Label htmlFor={id}>{label}</Label>
+      <Input
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={className ?? FIELD_CLASS}
+      />
+    </div>
+  );
+}
+
+/** Dropdown select field with label. */
+function SelectField({
+  id,
+  label,
+  value,
+  options,
+  placeholder,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  options: { value: string; label: string }[];
+  placeholder?: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div>
+      <Label htmlFor={id}>{label}</Label>
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger className={FIELD_CLASS}>
+          <SelectValue placeholder={placeholder ?? 'Select'} />
+        </SelectTrigger>
+        <SelectContent className={FIELD_CLASS}>
+          {options.map((opt) => (
+            <SelectItem key={opt.value} value={opt.value}>
+              {opt.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
+/** Toggle switch with label. */
+function SwitchField({
+  id,
+  label,
+  checked,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <div className="flex items-center space-x-2">
+      <Switch id={id} checked={checked} onCheckedChange={onChange} />
+      <Label htmlFor={id}>{label}</Label>
+    </div>
+  );
+}
+
+/** Range slider with label showing current value. */
+function SliderField({
+  id,
+  label,
+  value,
+  min,
+  max,
+  step,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  onChange: (value: number) => void;
+}) {
+  return (
+    <div>
+      <div className="flex justify-between">
+        <Label htmlFor={id}>
+          {label}: {value}
+        </Label>
+      </div>
+      <Slider
+        id={id}
+        min={min}
+        max={max}
+        step={step}
+        value={[value]}
+        onValueChange={(v) => onChange(v[0])}
+        className="my-2"
+      />
+    </div>
+  );
+}
+
+// ── Shared option sets ────────────────────────────────────────────────
+
+/** I/O type options shared by Input and Output nodes. */
+const IO_TYPE_OPTIONS = [
+  { value: 'text', label: 'Text' },
+  { value: 'image', label: 'Image' },
+  { value: 'file', label: 'File' },
+  { value: 'structured', label: 'Structured Data' },
+];
+
+const MODEL_OPTIONS = [
+  { value: 'gpt-4', label: 'GPT-4' },
+  { value: 'gpt-4-vision', label: 'GPT-4 Vision' },
+  { value: 'claude-3-opus', label: 'Claude 3 Opus' },
+  { value: 'llama-3-70b', label: 'Llama 3 70B' },
+];
+
+const MEMORY_TYPE_OPTIONS = [
+  { value: 'conversation', label: 'Conversation' },
+  { value: 'vector', label: 'Vector Store' },
+  { value: 'hybrid', label: 'Hybrid' },
+];
+
+const TOOL_TYPE_OPTIONS = [
+  { value: 'api', label: 'API Call' },
+  { value: 'function', label: 'Function' },
+  { value: 'data', label: 'Data Source' },
+];
+
+// ── Main component ────────────────────────────────────────────────────
+
 interface PropertiesPanelProps {
   node: any;
   updateNodeData: (nodeId: string, data: any) => void;
@@ -29,208 +185,81 @@ export function PropertiesPanel({ node, updateNodeData }: PropertiesPanelProps) 
 
   const renderInputNodeProperties = () => (
     <div className="space-y-4">
-      <div>
-        <Label htmlFor="label">Label</Label>
-        <Input
-          id="label"
-          value={localData.label || ''}
-          onChange={(e) => handleChange('label', e.target.value)}
-          className="bg-[#1a1a3a] border-[#2a2a4a]"
-        />
-      </div>
-      <div>
-        <Label htmlFor="type">Input Type</Label>
-        <Select
-          value={localData.type || 'text'}
-          onValueChange={(value) => handleChange('type', value)}
-        >
-          <SelectTrigger className="bg-[#1a1a3a] border-[#2a2a4a]">
-            <SelectValue placeholder="Select type" />
-          </SelectTrigger>
-          <SelectContent className="bg-[#1a1a3a] border-[#2a2a4a]">
-            <SelectItem value="text">Text</SelectItem>
-            <SelectItem value="image">Image</SelectItem>
-            <SelectItem value="file">File</SelectItem>
-            <SelectItem value="structured">Structured Data</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="flex items-center space-x-2">
-        <Switch
-          id="required"
-          checked={localData.required || false}
-          onCheckedChange={(checked) => handleChange('required', checked)}
-        />
-        <Label htmlFor="required">Required</Label>
-      </div>
+      <TextField id="label" label="Label" value={localData.label || ''} onChange={(v) => handleChange('label', v)} />
+      <SelectField
+        id="type"
+        label="Input Type"
+        value={localData.type || 'text'}
+        options={IO_TYPE_OPTIONS}
+        placeholder="Select type"
+        onChange={(v) => handleChange('type', v)}
+      />
+      <SwitchField id="required" label="Required" checked={localData.required || false} onChange={(v) => handleChange('required', v)} />
     </div>
   );
 
   const renderProcessNodeProperties = () => (
     <Tabs defaultValue="basic">
-      <TabsList className="bg-[#1a1a3a]">
+      <TabsList className={FIELD_CLASS}>
         <TabsTrigger value="basic">Basic</TabsTrigger>
         <TabsTrigger value="advanced">Advanced</TabsTrigger>
       </TabsList>
       <TabsContent value="basic" className="space-y-4 pt-4">
-        <div>
-          <Label htmlFor="label">Label</Label>
-          <Input
-            id="label"
-            value={localData.label || ''}
-            onChange={(e) => handleChange('label', e.target.value)}
-            className="bg-[#1a1a3a] border-[#2a2a4a]"
-          />
-        </div>
-        <div>
-          <Label htmlFor="model">Model</Label>
-          <Select
-            value={localData.model || 'gpt-4'}
-            onValueChange={(value) => handleChange('model', value)}
-          >
-            <SelectTrigger className="bg-[#1a1a3a] border-[#2a2a4a]">
-              <SelectValue placeholder="Select model" />
-            </SelectTrigger>
-            <SelectContent className="bg-[#1a1a3a] border-[#2a2a4a]">
-              <SelectItem value="gpt-4">GPT-4</SelectItem>
-              <SelectItem value="gpt-4-vision">GPT-4 Vision</SelectItem>
-              <SelectItem value="claude-3-opus">Claude 3 Opus</SelectItem>
-              <SelectItem value="llama-3-70b">Llama 3 70B</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <TextField id="label" label="Label" value={localData.label || ''} onChange={(v) => handleChange('label', v)} />
+        <SelectField
+          id="model"
+          label="Model"
+          value={localData.model || 'gpt-4'}
+          options={MODEL_OPTIONS}
+          placeholder="Select model"
+          onChange={(v) => handleChange('model', v)}
+        />
         <div>
           <Label htmlFor="prompt">System Prompt</Label>
           <Textarea
             id="prompt"
             value={localData.prompt || ''}
             onChange={(e) => handleChange('prompt', e.target.value)}
-            className="bg-[#1a1a3a] border-[#2a2a4a] min-h-[120px]"
+            className={`${FIELD_CLASS} min-h-[120px]`}
           />
         </div>
       </TabsContent>
       <TabsContent value="advanced" className="space-y-4 pt-4">
-        <div>
-          <div className="flex justify-between">
-            <Label htmlFor="temperature">Temperature: {localData.temperature || 0.7}</Label>
-          </div>
-          <Slider
-            id="temperature"
-            min={0}
-            max={2}
-            step={0.1}
-            value={[localData.temperature || 0.7]}
-            onValueChange={(value) => handleChange('temperature', value[0])}
-            className="my-2"
-          />
-        </div>
-        <div>
-          <div className="flex justify-between">
-            <Label htmlFor="maxTokens">Max Tokens: {localData.maxTokens || 1000}</Label>
-          </div>
-          <Slider
-            id="maxTokens"
-            min={100}
-            max={8000}
-            step={100}
-            value={[localData.maxTokens || 1000]}
-            onValueChange={(value) => handleChange('maxTokens', value[0])}
-            className="my-2"
-          />
-        </div>
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="memory"
-            checked={localData.memory || false}
-            onCheckedChange={(checked) => handleChange('memory', checked)}
-          />
-          <Label htmlFor="memory">Enable Memory</Label>
-        </div>
+        <SliderField id="temperature" label="Temperature" value={localData.temperature || 0.7} min={0} max={2} step={0.1} onChange={(v) => handleChange('temperature', v)} />
+        <SliderField id="maxTokens" label="Max Tokens" value={localData.maxTokens || 1000} min={100} max={8000} step={100} onChange={(v) => handleChange('maxTokens', v)} />
+        <SwitchField id="memory" label="Enable Memory" checked={localData.memory || false} onChange={(v) => handleChange('memory', v)} />
       </TabsContent>
     </Tabs>
   );
 
   const renderMemoryNodeProperties = () => (
     <div className="space-y-4">
-      <div>
-        <Label htmlFor="label">Label</Label>
-        <Input
-          id="label"
-          value={localData.label || ''}
-          onChange={(e) => handleChange('label', e.target.value)}
-          className="bg-[#1a1a3a] border-[#2a2a4a]"
-        />
-      </div>
-      <div>
-        <Label htmlFor="memoryType">Memory Type</Label>
-        <Select
-          value={localData.memoryType || 'conversation'}
-          onValueChange={(value) => handleChange('memoryType', value)}
-        >
-          <SelectTrigger className="bg-[#1a1a3a] border-[#2a2a4a]">
-            <SelectValue placeholder="Select type" />
-          </SelectTrigger>
-          <SelectContent className="bg-[#1a1a3a] border-[#2a2a4a]">
-            <SelectItem value="conversation">Conversation</SelectItem>
-            <SelectItem value="vector">Vector Store</SelectItem>
-            <SelectItem value="hybrid">Hybrid</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div>
-        <div className="flex justify-between">
-          <Label htmlFor="capacity">Capacity: {localData.capacity || 10}</Label>
-        </div>
-        <Slider
-          id="capacity"
-          min={1}
-          max={50}
-          step={1}
-          value={[localData.capacity || 10]}
-          onValueChange={(value) => handleChange('capacity', value[0])}
-          className="my-2"
-        />
-      </div>
+      <TextField id="label" label="Label" value={localData.label || ''} onChange={(v) => handleChange('label', v)} />
+      <SelectField
+        id="memoryType"
+        label="Memory Type"
+        value={localData.memoryType || 'conversation'}
+        options={MEMORY_TYPE_OPTIONS}
+        placeholder="Select type"
+        onChange={(v) => handleChange('memoryType', v)}
+      />
+      <SliderField id="capacity" label="Capacity" value={localData.capacity || 10} min={1} max={50} step={1} onChange={(v) => handleChange('capacity', v)} />
     </div>
   );
 
   const renderToolNodeProperties = () => (
     <div className="space-y-4">
-      <div>
-        <Label htmlFor="label">Label</Label>
-        <Input
-          id="label"
-          value={localData.label || ''}
-          onChange={(e) => handleChange('label', e.target.value)}
-          className="bg-[#1a1a3a] border-[#2a2a4a]"
-        />
-      </div>
-      <div>
-        <Label htmlFor="toolType">Tool Type</Label>
-        <Select
-          value={localData.toolType || 'api'}
-          onValueChange={(value) => handleChange('toolType', value)}
-        >
-          <SelectTrigger className="bg-[#1a1a3a] border-[#2a2a4a]">
-            <SelectValue placeholder="Select type" />
-          </SelectTrigger>
-          <SelectContent className="bg-[#1a1a3a] border-[#2a2a4a]">
-            <SelectItem value="api">API Call</SelectItem>
-            <SelectItem value="function">Function</SelectItem>
-            <SelectItem value="data">Data Source</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <TextField id="label" label="Label" value={localData.label || ''} onChange={(v) => handleChange('label', v)} />
+      <SelectField
+        id="toolType"
+        label="Tool Type"
+        value={localData.toolType || 'api'}
+        options={TOOL_TYPE_OPTIONS}
+        placeholder="Select type"
+        onChange={(v) => handleChange('toolType', v)}
+      />
       {localData.toolType === 'api' && (
-        <div>
-          <Label htmlFor="endpoint">API Endpoint</Label>
-          <Input
-            id="endpoint"
-            value={localData.endpoint || ''}
-            onChange={(e) => handleChange('endpoint', e.target.value)}
-            className="bg-[#1a1a3a] border-[#2a2a4a]"
-          />
-        </div>
+        <TextField id="endpoint" label="API Endpoint" value={localData.endpoint || ''} onChange={(v) => handleChange('endpoint', v)} />
       )}
       {localData.toolType === 'function' && (
         <div>
@@ -239,7 +268,7 @@ export function PropertiesPanel({ node, updateNodeData }: PropertiesPanelProps) 
             id="function"
             value={localData.function || ''}
             onChange={(e) => handleChange('function', e.target.value)}
-            className="bg-[#1a1a3a] border-[#2a2a4a] min-h-[120px] font-mono"
+            className={`${FIELD_CLASS} min-h-[120px] font-mono`}
           />
         </div>
       )}
@@ -248,40 +277,16 @@ export function PropertiesPanel({ node, updateNodeData }: PropertiesPanelProps) 
 
   const renderOutputNodeProperties = () => (
     <div className="space-y-4">
-      <div>
-        <Label htmlFor="label">Label</Label>
-        <Input
-          id="label"
-          value={localData.label || ''}
-          onChange={(e) => handleChange('label', e.target.value)}
-          className="bg-[#1a1a3a] border-[#2a2a4a]"
-        />
-      </div>
-      <div>
-        <Label htmlFor="type">Output Type</Label>
-        <Select
-          value={localData.type || 'text'}
-          onValueChange={(value) => handleChange('type', value)}
-        >
-          <SelectTrigger className="bg-[#1a1a3a] border-[#2a2a4a]">
-            <SelectValue placeholder="Select type" />
-          </SelectTrigger>
-          <SelectContent className="bg-[#1a1a3a] border-[#2a2a4a]">
-            <SelectItem value="text">Text</SelectItem>
-            <SelectItem value="image">Image</SelectItem>
-            <SelectItem value="file">File</SelectItem>
-            <SelectItem value="structured">Structured Data</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="flex items-center space-x-2">
-        <Switch
-          id="format"
-          checked={localData.format || false}
-          onCheckedChange={(checked) => handleChange('format', checked)}
-        />
-        <Label htmlFor="format">Format Output</Label>
-      </div>
+      <TextField id="label" label="Label" value={localData.label || ''} onChange={(v) => handleChange('label', v)} />
+      <SelectField
+        id="type"
+        label="Output Type"
+        value={localData.type || 'text'}
+        options={IO_TYPE_OPTIONS}
+        placeholder="Select type"
+        onChange={(v) => handleChange('type', v)}
+      />
+      <SwitchField id="format" label="Format Output" checked={localData.format || false} onChange={(v) => handleChange('format', v)} />
     </div>
   );
 
