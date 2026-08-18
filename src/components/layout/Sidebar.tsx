@@ -1,4 +1,13 @@
-import { Guitar, Home, Music, Settings, Trophy, User } from "lucide-react";
+import { 
+  Home, 
+  Cpu, 
+  Workflow, 
+  Layers, 
+  Share2, 
+  Settings, 
+  Users, 
+  Sparkles
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -6,7 +15,6 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -15,29 +23,34 @@ import { Link } from "react-router-dom";
 
 const items = [
   {
-    title: "Home",
+    title: "Dashboard",
     url: "/",
     icon: Home,
   },
   {
-    title: "Create Avatar",
-    url: "/avatar",
-    icon: User,
+    title: "Agent Explorer",
+    url: "/agents",
+    icon: Cpu,
   },
   {
-    title: "Instruments",
-    url: "/instruments",
-    icon: Guitar,
+    title: "Workflow Builder",
+    url: "/workflows",
+    icon: Workflow,
   },
   {
-    title: "Play Game",
-    url: "/play",
-    icon: Music,
+    title: "Model Playground",
+    url: "/models",
+    icon: Layers,
   },
   {
-    title: "Achievements",
-    url: "/achievements",
-    icon: Trophy,
+    title: "Marketplace",
+    url: "/marketplace",
+    icon: Share2,
+  },
+  {
+    title: "Team",
+    url: "/team",
+    icon: Users,
   },
   {
     title: "Settings",
@@ -48,19 +61,24 @@ const items = [
 
 export function AppSidebar() {
   return (
-    <Sidebar className="bg-gradient-to-b from-purple-900 to-indigo-900 text-white">
-      <SidebarHeader className="border-b-0 flex justify-center py-6">
-        <h1 className="text-2xl font-bold tracking-tight">RockStarAI</h1>
-      </SidebarHeader>
+    <Sidebar className="bg-[#0a1029] border-r border-[#2a2a4a]">
       <SidebarContent>
+        <div className="flex items-center justify-center py-6">
+          <Link to="/" className="flex items-center space-x-2">
+            <Sparkles className="h-8 w-8 text-[#5ee7ff]" />
+            <span className="text-xl font-bold bg-gradient-to-r from-[#5ee7ff] to-[#8a5fff] bg-clip-text text-transparent">
+              Arch1tech
+            </span>
+          </Link>
+        </div>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-gray-300">Main Menu</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-[#8a5fff]">Platform</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className="hover:bg-purple-800">
-                    <Link to={item.url} className="flex items-center gap-3">
+                  <SidebarMenuButton asChild>
+                    <Link to={item.url} className="flex items-center space-x-2 text-gray-300 hover:text-[#5ee7ff] transition-colors">
                       <item.icon className="h-5 w-5" />
                       <span>{item.title}</span>
                     </Link>

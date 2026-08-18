@@ -1,240 +1,264 @@
-import { useState } from "react";
-import { MainLayout } from "@/components/layout/MainLayout";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
-import { useToast } from "@/hooks/use-toast";
-import { useTheme } from "@/components/layout/theme-provider";
-import { Save, Volume, Music, Bell, Moon, Sun, Smartphone } from "lucide-react";
+import React, { useState, useEffect } from "react";
 
 export default function SettingsPage() {
-  const { toast } = useToast();
-  const { theme, setTheme } = useTheme();
-  
-  const [settings, setSettings] = useState({
-    username: "RockStar123",
-    email: "player@example.com",
-    musicVolume: 80,
-    sfxVolume: 70,
-    notifications: true,
-    vibration: true,
-    autoSave: true,
-    showTutorials: true,
-    highPerformanceMode: false,
-  });
+  const [apiKey, setApiKey] = useState("");
+  const [showKey, setShowKey] = useState(false);
+  const [keySaved, setKeySaved] = useState(false);
+  const [keyStatus, setKeyStatus] = useState<"none" | "set" | "testing">("none");
+  const [darkMode, setDarkMode] = useState(true);
+  const [importStatus, setImportStatus] = useState("");
 
-  const handleChange = (field: string, value: string | number | boolean) => {
-    setSettings((prev) => ({ ...prev, [field]: value }));
+  useEffect(() => {
+    const saved = localStorage.getItem('arch15-groq-key');
+    if (saved) {
+      setApiKey(saved);
+      setKeyStatus("set");
+    }
+    const dm = localStorage.getItem('arch15-dark-mode');
+    setDarkMode(dm !== "false");
+  }, []);
+
+  const saveApiKey = () => {
+    if (apiKey.trim()) {
+      localStorage.setItem('arch15-groq-key', apiKey.trim());
+      setKeyStatus("set");
+      setKeySaved(true);
+      setTimeout(() => setKeySaved(false), 2000);
+    } else {
+      localStorage.removeItem('arch15-groq-key');
+      setKeyStatus("none");
+    }
   };
 
-  const handleSave = () => {
-    toast({
-      title: "Settings Saved",
-      description: "Your preferences have been updated successfully.",
-    });
+  const clearData = (key: string, label: string) => {
+    if (confirm(`Clear all ${label}? This cannot be undone.`)) {
+      localStorage.removeItem(key);
+    }
   };
+
+  const exportData = () => {
+    const data = {
+      agents: JSON.parse(localStorage.getItem('arch15-agents') || '[]'),
+      models: JSON.parse(localStorage.getItem('arch15-models') || '[]'),
+      workflows: JSON.parse(localStorage.getItem('arch15-workflows') || '[]'),
+      activity: JSON.parse(localStorage.getItem('arch15-activity') || '[]'),
+      exportedAt: new Date().toISOString(),
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `arch15-export-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importData = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target?.result as string);
+        if (data.agents) localStorage.setItem('arch15-agents', JSON.stringify(data.agents));
+        if (data.models) localStorage.setItem('arch15-models', JSON.stringify(data.models));
+        if (data.workflows) localStorage.setItem('arch15-workflows', JSON.stringify(data.workflows));
+        if (data.activity) localStorage.setItem('arch15-activity', JSON.stringify(data.activity));
+        setImportStatus("✅ Data imported successfully! Refresh to see changes.");
+      } catch {
+        setImportStatus("❌ Invalid file format.");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
+  const inputCls = "bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 focus:border-cyan-400 focus:outline-none w-full text-sm";
 
   return (
-    <MainLayout>
-      <div className="w-full min-h-screen bg-gradient-to-b from-black to-purple-950 text-white py-8 px-4">
-        <div className="container mx-auto max-w-4xl">
-          <h1 className="text-4xl font-bold mb-8 text-center">Settings</h1>
-          
-          <div className="space-y-6">
-            {/* Profile Settings */}
-            <Card className="bg-purple-900 bg-opacity-20 border-purple-800">
-              <CardHeader>
-                <CardTitle>Profile Settings</CardTitle>
-                <CardDescription>Manage your account information</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="username">Username</Label>
-                  <Input 
-                    id="username"
-                    value={settings.username}
-                    onChange={(e) => handleChange("username", e.target.value)}
-                    className="bg-purple-950 border-purple-700"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input 
-                    id="email"
-                    type="email"
-                    value={settings.email}
-                    onChange={(e) => handleChange("email", e.target.value)}
-                    className="bg-purple-950 border-purple-700"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-            
-            {/* Audio Settings */}
-            <Card className="bg-purple-900 bg-opacity-20 border-purple-800">
-              <CardHeader>
-                <CardTitle>Audio Settings</CardTitle>
-                <CardDescription>Adjust volume levels</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="musicVolume" className="flex items-center gap-2">
-                      <Music className="h-4 w-4" />
-                      Music Volume
-                    </Label>
-                    <span>{settings.musicVolume}%</span>
-                  </div>
-                  <Slider
-                    id="musicVolume"
-                    value={[settings.musicVolume]}
-                    onValueChange={(value) => handleChange("musicVolume", value[0])}
-                    max={100}
-                    step={1}
-                    className="py-4"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="sfxVolume" className="flex items-center gap-2">
-                      <Volume className="h-4 w-4" />
-                      Sound Effects Volume
-                    </Label>
-                    <span>{settings.sfxVolume}%</span>
-                  </div>
-                  <Slider
-                    id="sfxVolume"
-                    value={[settings.sfxVolume]}
-                    onValueChange={(value) => handleChange("sfxVolume", value[0])}
-                    max={100}
-                    step={1}
-                    className="py-4"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-            
-            {/* Notification Settings */}
-            <Card className="bg-purple-900 bg-opacity-20 border-purple-800">
-              <CardHeader>
-                <CardTitle>Notification Settings</CardTitle>
-                <CardDescription>Manage alerts and notifications</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="notifications" className="flex items-center gap-2">
-                    <Bell className="h-4 w-4" />
-                    Enable Notifications
-                  </Label>
-                  <Switch
-                    id="notifications"
-                    checked={settings.notifications}
-                    onCheckedChange={(checked) => handleChange("notifications", checked)}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="vibration" className="flex items-center gap-2">
-                    <Smartphone className="h-4 w-4" />
-                    Enable Vibration
-                  </Label>
-                  <Switch
-                    id="vibration"
-                    checked={settings.vibration}
-                    onCheckedChange={(checked) => handleChange("vibration", checked)}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-            
-            {/* Game Settings */}
-            <Card className="bg-purple-900 bg-opacity-20 border-purple-800">
-              <CardHeader>
-                <CardTitle>Game Settings</CardTitle>
-                <CardDescription>Configure gameplay preferences</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="autoSave">Auto-Save Progress</Label>
-                  <Switch
-                    id="autoSave"
-                    checked={settings.autoSave}
-                    onCheckedChange={(checked) => handleChange("autoSave", checked)}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="showTutorials">Show Tutorials</Label>
-                  <Switch
-                    id="showTutorials"
-                    checked={settings.showTutorials}
-                    onCheckedChange={(checked) => handleChange("showTutorials", checked)}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="highPerformanceMode">High Performance Mode</Label>
-                  <Switch
-                    id="highPerformanceMode"
-                    checked={settings.highPerformanceMode}
-                    onCheckedChange={(checked) => handleChange("highPerformanceMode", checked)}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-            
-            {/* Theme Settings */}
-            <Card className="bg-purple-900 bg-opacity-20 border-purple-800">
-              <CardHeader>
-                <CardTitle>Theme Settings</CardTitle>
-                <CardDescription>Customize the app appearance</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <Label>App Theme</Label>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className={theme === "light" ? "bg-purple-700" : ""}
-                      onClick={() => setTheme("light")}
-                    >
-                      <Sun className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className={theme === "dark" ? "bg-purple-700" : ""}
-                      onClick={() => setTheme("dark")}
-                    >
-                      <Moon className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className={theme === "system" ? "bg-purple-700" : ""}
-                      onClick={() => setTheme("system")}
-                    >
-                      <Smartphone className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            {/* Save Button */}
-            <div className="flex justify-end">
-              <Button 
-                onClick={handleSave}
-                className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700"
+    <div className="p-6 max-w-3xl mx-auto">
+      <div className="mb-6">
+        <h1 className="text-2xl font-black text-white">⚙️ Settings</h1>
+        <p className="text-slate-400 text-sm mt-1">Configure your Arch1tech platform</p>
+      </div>
+
+      <div className="space-y-6">
+        {/* AI Configuration */}
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+          <h2 className="font-bold text-white mb-1">AI Configuration</h2>
+          <p className="text-slate-500 text-xs mb-4">Connect to Groq for AI-powered features</p>
+
+          <div className="mb-4">
+            <label className="block text-sm text-slate-400 mb-2">Groq API Key</label>
+            <div className="relative">
+              <input
+                type={showKey ? "text" : "password"}
+                value={apiKey}
+                onChange={e => setApiKey(e.target.value)}
+                placeholder="gsk_..."
+                className={`${inputCls} pr-20`}
+              />
+              <button
+                onClick={() => setShowKey(!showKey)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white transition"
               >
-                <Save className="mr-2 h-4 w-4" />
-                Save Settings
-              </Button>
+                {showKey ? "Hide" : "Show"}
+              </button>
+            </div>
+            <div className="flex items-center justify-between mt-2">
+              <div className="flex items-center gap-2">
+                <span className={`w-2 h-2 rounded-full ${keyStatus === 'set' ? 'bg-green-400' : 'bg-slate-600'}`}></span>
+                <span className={`text-xs ${keyStatus === 'set' ? 'text-green-400' : 'text-slate-500'}`}>
+                  {keyStatus === 'set' ? 'API key configured' : 'No API key set'}
+                </span>
+              </div>
+              <a
+                href="https://console.groq.com/keys"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-cyan-400 hover:underline"
+              >
+                Get API key →
+              </a>
+            </div>
+          </div>
+
+          <button
+            onClick={saveApiKey}
+            className="bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:opacity-90 transition font-medium text-sm"
+          >
+            {keySaved ? "✓ Saved!" : "Save API Key"}
+          </button>
+          {keyStatus === "set" && (
+            <button
+              onClick={() => { localStorage.removeItem('arch15-groq-key'); setApiKey(""); setKeyStatus("none"); }}
+              className="ml-3 bg-red-600/20 text-red-400 border border-red-500/30 px-4 py-2 rounded-lg hover:bg-red-600/30 transition text-sm"
+            >
+              Remove Key
+            </button>
+          )}
+        </div>
+
+        {/* Platform Preferences */}
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+          <h2 className="font-bold text-white mb-1">Platform Preferences</h2>
+          <p className="text-slate-500 text-xs mb-4">Customize your experience</p>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-sm text-white">Dark Mode</div>
+                <div className="text-xs text-slate-500">Cyberpunk dark theme (recommended)</div>
+              </div>
+              <button
+                onClick={() => {
+                  const next = !darkMode;
+                  setDarkMode(next);
+                  localStorage.setItem('arch15-dark-mode', String(next));
+                }}
+                className={`w-11 h-6 rounded-full transition-all ${darkMode ? 'bg-cyan-500' : 'bg-slate-600'} relative`}
+              >
+                <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${darkMode ? 'translate-x-5' : 'translate-x-0'}`}></span>
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-sm text-white">Language</div>
+                <div className="text-xs text-slate-500">Interface language</div>
+              </div>
+              <span className="text-sm text-slate-400">English</span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-sm text-white">AI Model</div>
+                <div className="text-xs text-slate-500">Groq inference model</div>
+              </div>
+              <span className="text-sm text-cyan-400">llama-3.3-70b-versatile</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Data Management */}
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+          <h2 className="font-bold text-white mb-1">Data Management</h2>
+          <p className="text-slate-500 text-xs mb-4">Manage your stored data</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            <button
+              onClick={() => clearData('arch15-agents', 'agents')}
+              className="bg-slate-700 text-red-400 border border-red-500/20 px-3 py-2 rounded-lg hover:bg-red-600/20 transition text-sm text-left"
+            >
+              🗑 Clear all saved agents
+            </button>
+            <button
+              onClick={() => clearData('arch15-models', 'models')}
+              className="bg-slate-700 text-red-400 border border-red-500/20 px-3 py-2 rounded-lg hover:bg-red-600/20 transition text-sm text-left"
+            >
+              🗑 Clear all saved models
+            </button>
+            <button
+              onClick={() => clearData('arch15-workflows', 'workflows')}
+              className="bg-slate-700 text-red-400 border border-red-500/20 px-3 py-2 rounded-lg hover:bg-red-600/20 transition text-sm text-left"
+            >
+              🗑 Clear all workflows
+            </button>
+            <button
+              onClick={() => clearData('arch15-activity', 'activity')}
+              className="bg-slate-700 text-red-400 border border-red-500/20 px-3 py-2 rounded-lg hover:bg-red-600/20 transition text-sm text-left"
+            >
+              🗑 Clear activity log
+            </button>
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={exportData}
+              className="bg-slate-700 text-white px-4 py-2 rounded-lg hover:bg-slate-600 transition text-sm"
+            >
+              📤 Export all data
+            </button>
+            <label className="bg-slate-700 text-white px-4 py-2 rounded-lg hover:bg-slate-600 transition text-sm cursor-pointer">
+              📥 Import data
+              <input type="file" accept=".json" onChange={importData} className="hidden" />
+            </label>
+          </div>
+          {importStatus && (
+            <p className="text-sm mt-3 text-slate-300">{importStatus}</p>
+          )}
+        </div>
+
+        {/* About */}
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+          <h2 className="font-bold text-white mb-4">About</h2>
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-400">Platform Version</span>
+              <span className="text-cyan-400 font-mono">1.5.0</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-400">Built by</span>
+              <span className="text-white">Or4cl3 AI Solutions</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-400">AI Provider</span>
+              <span className="text-white">Groq (llama-3.3-70b-versatile)</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-400">GitHub</span>
+              <a
+                href="https://github.com/BathSalt-2/Architech-1.5"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-cyan-400 hover:underline"
+              >
+                BathSalt-2/Architech-1.5 →
+              </a>
             </div>
           </div>
         </div>
       </div>
-    </MainLayout>
+    </div>
   );
 }

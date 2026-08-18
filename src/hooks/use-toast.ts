@@ -1,5 +1,5 @@
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/toast"
 
 export const useToast = () => {
-  return { toast };
-};
+  return { toast }
+}

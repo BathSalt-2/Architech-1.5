@@ -1,32 +1,26 @@
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-
-import { ThemeProvider } from "./components/layout/theme-provider";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import "./index.css";
-import Index from "./pages/index";
-
-// Mock components for routes that aren't implemented yet
-const MockComponent = ({ name }: { name: string }) => (
-  <div className="p-4">
-    <h1 className="text-2xl font-bold">{name} Page</h1>
-    <p>This page is under construction.</p>
-  </div>
-);
+import { AppLayout } from "./components/layout/AppLayout";
+import IndexPage from "./pages/index";
+import AgentsPage from "./pages/agents";
+import WorkflowsPage from "./pages/workflows";
+import ModelsPage from "./pages/models";
+import MarketplacePage from "./pages/marketplace";
+import SettingsPage from "./pages/settings";
 
 createRoot(document.getElementById("root")!).render(
-  <ThemeProvider>
-    <BrowserRouter>
+  <BrowserRouter>
+    <AppLayout>
       <Routes>
-        <Route path='/' element={<Index />} />
-        <Route path='/avatar' element={<MockComponent name="Avatar" />} />
-        <Route path='/instruments' element={<MockComponent name="Instruments" />} />
-        <Route path='/play' element={<MockComponent name="Play" />} />
-        <Route path='/achievements' element={<MockComponent name="Achievements" />} />
-        <Route path='/settings' element={<MockComponent name="Settings" />} />
-        <Route path='/login' element={<MockComponent name="Login" />} />
-        <Route path='/signup' element={<MockComponent name="Signup" />} />
-        <Route path='/logout' element={<MockComponent name="Logout" />} />
+        <Route path="/" element={<IndexPage />} />
+        <Route path="/agents" element={<AgentsPage />} />
+        <Route path="/workflows" element={<WorkflowsPage />} />
+        <Route path="/models" element={<ModelsPage />} />
+        <Route path="/marketplace" element={<MarketplacePage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </BrowserRouter>
-  </ThemeProvider>
+    </AppLayout>
+  </BrowserRouter>
 );

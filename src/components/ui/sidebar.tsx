@@ -7,7 +7,7 @@ const Sidebar = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex h-screen w-64 flex-col overflow-hidden", className)}
+    className={cn("h-full w-full overflow-auto", className)}
     {...props}
   />
 ))
@@ -19,35 +19,11 @@ const SidebarContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-1 flex-col overflow-auto", className)}
+    className={cn("flex flex-col gap-4 p-4", className)}
     {...props}
   />
 ))
 SidebarContent.displayName = "SidebarContent"
-
-const SidebarHeader = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("flex h-14 items-center border-b px-4", className)}
-    {...props}
-  />
-))
-SidebarHeader.displayName = "SidebarHeader"
-
-const SidebarFooter = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("flex h-14 items-center border-t px-4", className)}
-    {...props}
-  />
-))
-SidebarFooter.displayName = "SidebarFooter"
 
 const SidebarGroup = React.forwardRef<
   HTMLDivElement,
@@ -55,7 +31,7 @@ const SidebarGroup = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("py-2", className)}
+    className={cn("flex flex-col gap-2", className)}
     {...props}
   />
 ))
@@ -67,7 +43,7 @@ const SidebarGroupLabel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("px-4 py-2 text-xs font-medium text-sidebar-foreground/70", className)}
+    className={cn("text-xs font-medium uppercase tracking-wider text-muted-foreground", className)}
     {...props}
   />
 ))
@@ -79,7 +55,7 @@ const SidebarGroupContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("", className)}
+    className={cn("flex flex-col gap-1", className)}
     {...props}
   />
 ))
@@ -91,7 +67,7 @@ const SidebarMenu = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("", className)}
+    className={cn("flex flex-col gap-1", className)}
     {...props}
   />
 ))
@@ -116,7 +92,7 @@ const SidebarMenuButton = React.forwardRef<
   <button
     ref={ref}
     className={cn(
-      "flex w-full items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+      "flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
       className
     )}
     {...props}
@@ -126,10 +102,7 @@ SidebarMenuButton.displayName = "SidebarMenuButton"
 
 export {
   Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarFooter,
-  SidebarGroup,
+  SidebarContent,   SidebarGroup,
   SidebarGroupLabel,
   SidebarGroupContent,
   SidebarMenu,
