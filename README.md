@@ -1,150 +1,144 @@
-# Architech-1 
+# 🏗️ Architech v1.5
+### *Early Prototype — Foundational Scaffold*
 
-A modern, intuitive interface for managing AI and machine learning projects. Built with React, TypeScript, and Tailwind CSS.
+**Powered by Or4cl3 AI Solutions** · *Build the future, one thought at a time.*
 
-![AI Architect](https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=1200&h=600)
+<div align="center">
 
-## Features
+[![Or4cl3 AI](https://img.shields.io/badge/Or4cl3_AI_Solutions-00d4ff?style=for-the-badge)](https://github.com/BathSalt-2)
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
+[![Status](https://img.shields.io/badge/status-prototype_scaffold-orange?style=flat-square)](https://github.com/BathSalt-2/Architech-1.5)
 
-- 🎨 Modern, dark-themed UI with blue accents
-- 📱 Responsive design with mobile-first approach
-- 🧩 Modular component architecture
-- 🚀 Project management dashboard
-- 📚 Resource library and tutorials
-- 💬 Chat interface (coming soon)
-- 👤 User profiles (coming soon)
-- ❓ Help center (coming soon)
+</div>
 
-## Tech Stack
+---
 
-- **Frontend Framework**: React 18
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Icons**: Lucide React
-- **Build Tool**: Vite
-- **Package Manager**: npm
-- **Code Quality**: ESLint
+## 📌 What This Is
 
-## Getting Started
+**Architech v1.5** is the foundational scaffold for the Architech AI platform — an early prototype establishing the project's component architecture, routing structure, and visual design system.
 
-### Prerequisites
+This version contains the **structural skeleton** of the platform: the project layout, styling foundation, navigation patterns, and component organization that informed later iterations. Active feature development began in subsequent versions.
 
-- Node.js 18.0 or higher
-- npm 7.0 or higher
+> **Looking for the working Arch1tech platform?** → See [`arch1tech`](https://github.com/BathSalt-2/arch1tech) for the live functional implementation.  
+> **For the full product vision?** → See [`Arch1tech-2.0`](https://github.com/BathSalt-2/Arch1tech-2.0) for the complete roadmap.
 
-### Installation
+---
 
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/ai-architect.git
-cd ai-architect
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Start the development server:
-```bash
-npm run dev
-```
-
-The application will be available at `http://localhost:5173`
-
-## Project Structure
+## 📁 Project Structure
 
 ```
 src/
 ├── components/
-│   └── ui/
-│       ├── Card.tsx
-│       ├── Modal.tsx
-│       └── NavButton.tsx
-├── screens/
-│   └── HomeScreen.tsx
-├── App.tsx
-└── index.css
+│   └── ui/                    # UI component library (in development)
+├── hooks/                     # Custom React hooks (scaffold)
+├── lib/                       # Utility libraries (scaffold)
+├── pages/                     # Page-level components (scaffold)
+├── screens/                   # Screen layouts (scaffold)
+├── App.tsx                    # Root application component
+├── main.tsx                   # Application entry point
+└── index.css                  # Global styles & Tailwind theme
 ```
 
-### Key Components
+---
 
-- `Card`: Reusable card component for content sections
-- `Modal`: Generic modal dialog component
-- `NavButton`: Navigation button component for the bottom bar
-- `HomeScreen`: Main dashboard screen component
+## ⚙️ What's Established
 
-## Available Scripts
+| Element | Status |
+|---------|--------|
+| React 18 + TypeScript project setup | ✅ |
+| Tailwind CSS design system | ✅ |
+| Vite build configuration | ✅ |
+| Component directory architecture | ✅ |
+| Mobile-first CSS foundations | ✅ |
+| Navigation patterns (hooks/screens) | 🏗️ Scaffold |
+| UI components | 🏗️ In development |
+| Feature logic | 🔜 Planned |
 
-- `npm run dev`: Start development server
-- `npm run build`: Build for production
-- `npm run lint`: Run ESLint
-- `npm run preview`: Preview production build
+---
 
-## Contributing
+## 🎨 Design Foundation
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+- **Dark theme** — optimized for extended use
+- **Bottom navigation** — mobile-first accessibility pattern
+- **Card-based layout** — clear visual hierarchy
+- **Blue accent palette** — professional, high-contrast aesthetics
 
-## Design Decisions
+---
 
-- **Dark Theme**: Optimized for reduced eye strain during extended use
-- **Bottom Navigation**: Mobile-first approach for better accessibility
-- **Card-based Layout**: Clear visual hierarchy and content organization
-- **Blue Accent Colors**: Professional appearance while maintaining visual interest
+## 🛠️ Tech Stack
 
-## Future Enhancements
+| Layer | Technology |
+|-------|-----------|
+| **Framework** | React 18 |
+| **Language** | TypeScript |
+| **Styling** | Tailwind CSS |
+| **Icons** | Lucide React |
+| **Build Tool** | Vite |
+| **Package Manager** | npm |
 
-- [ ] User authentication
-- [ ] Project templates
-- [ ] Real-time collaboration
+---
+
+## 🚀 Running Locally
+
+```bash
+# Clone the repository
+git clone https://github.com/BathSalt-2/Architech-1.5.git
+cd Architech-1.5
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+# Open http://localhost:5173
+```
+
+---
+
+## 🎯 Version History
+
+| Version | Description |
+|---------|-------------|
+| **v1.5** (this repo) | Foundational scaffold — project structure, styling, architecture |
+| **arch1tech** | Working platform — Groq AI, workflow canvas, agent builder |
+| **Arch1tech-2.0** | Vision showcase — full product concept and roadmap |
+
+---
+
+## 📈 Roadmap
+
+Features planned for future iterations (see [`Arch1tech-2.0`](https://github.com/BathSalt-2/Arch1tech-2.0) for full spec):
+
+- [ ] Project management dashboard
 - [ ] AI model integration
+- [ ] Chat interface
+- [ ] User authentication
 - [ ] Data visualization tools
-- [ ] Export/import functionality
+- [ ] Real-time collaboration
 - [ ] Theme customization
 - [ ] Keyboard shortcuts
 
-## License
+---
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## 🤝 Contributing
 
-## Acknowledgments
+This is an early-stage prototype by **Or4cl3 AI Solutions**. For the active development branch, contributions should target the main [`arch1tech`](https://github.com/BathSalt-2/arch1tech) repository.
 
-- Icons by [Lucide](https://lucide.dev)
-- UI components inspired by [shadcn/ui](https://ui.shadcn.com)
-- Color scheme based on modern design principles
+---
 
-## AI Model Generation and Deployment
+## 📄 License
 
-This section provides an overview of the capabilities for generating custom large language models (LLMs) tailored to specific needs. The following scripts and files have been created to assist in this process:
+This project is licensed under the MIT License.
 
-### Overview of Capabilities
+---
 
-- **Architecture Definition**: Define model architecture using JSON configuration.
-- **Data Preparation**: Prepare and preprocess data using Python scripts.
-- **Model Training**: Train models using PyTorch with customizable parameters.
-- **Model Evaluation**: Evaluate model performance and visualize results.
-- **Deployment**: Deploy models using Docker for containerization.
+## 🌟 Credits
 
-### Scripts and Files
+Built with 💙 by **Or4cl3 AI Solutions**
 
-1. **`src/architecture_definition.json`**: JSON template for defining model architecture.
-2. **`src/data_preparation.py`**: Script for cleaning, tokenizing, and transforming text data.
-3. **`src/model_training.py`**: Script for training models with PyTorch.
-4. **`src/model_evaluation.py`**: Script for evaluating models and visualizing results.
-5. **`src/deployment_dockerfile`**: Dockerfile for containerizing the application.
-
-### Instructions
-
-1. **Define Model Architecture**: Customize `src/architecture_definition.json` with specific model parameters.
-2. **Prepare Data**: Use `src/data_preparation.py` to preprocess your dataset.
-3. **Train Model**: Run `src/model_training.py` to train the model using your data and configuration.
-4. **Evaluate Model**: Use `src/model_evaluation.py` to assess model performance.
-5. **Deploy Model**: Build and run the Docker container using `src/deployment_dockerfile`.
-
-## Support
-
-For support, email support@aiarchitect.com or join our [Discord community](https://discord.gg/aiarchitect).
+- [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Lucide Icons](https://lucide.dev/)
+- [Vite](https://vitejs.dev/)
