@@ -102,8 +102,7 @@ SidebarMenuButton.displayName = "SidebarMenuButton"
 
 export {
   Sidebar,
-  SidebarContent,
-  SidebarGroup,
+  SidebarContent,   SidebarGroup,
   SidebarGroupLabel,
   SidebarGroupContent,
   SidebarMenu,
